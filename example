@@ -1,0 +1,25 @@
+#!/usr/bin/perl
+
+use lib 'blib/lib';
+use Data::XDumper;
+
+my $data = do {
+        open my $fh, '<', '';
+        bless $fh, 'IO::Florp';
+
+        my $q;
+        my $x = [ 0, 9, 1234324, -1234324, 1e99, "foo" ];
+        my $y = { foo => \"blah\n\0hello", bar => $x, baz => qr/\w+/ };
+        my $z = [[$fh, \*Foo::Bar, \*^G, sub{}], $x, $y, \\$q];
+	push @$z, [$z->[3]];
+        push @$x, \$y->{bar};
+	bless $z, 'Foo'
+};
+
+Data::XDumper->new(usehex => 1)->dump($data);
+print "\n";
+my $dumper = new Data::XDumper lformat => "L0";
+push @$data, \"florp!";
+$dumper->dump($data);
+print "\n";
+$dumper->dump($data, [\substr(${$data->[-1]}, 1)]);

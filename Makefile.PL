@@ -1,4 +1,4 @@
-# $Id: Makefile.PL,v 1.2 2003/02/13 16:31:59 xmath Exp $
+# $Id: Makefile.PL,v 1.6 2003/02/17 13:44:46 xmath Exp $
 
 use 5.006;
 use ExtUtils::MakeMaker;
@@ -6,7 +6,10 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
 	NAME		=> 'Data::XDumper',
 	VERSION_FROM	=> 'XDumper.pm',
-	PREREQ_PM	=> { Attribute::Property => 0 },
+	PREREQ_PM	=> {
+		B::More => "1.01",
+		Data::Dumper => 0,
+	},
 	ABSTRACT_FROM	=> 'XDumper.pm',
 	AUTHOR		=> 'Matthijs van Duin <xmath@cpan.org>',
 );

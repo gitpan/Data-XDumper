@@ -1,6 +1,20 @@
-$Id: Changes,v 1.2 2003/02/13 16:35:40 xmath Exp $
+$Id: Changes,v 1.5 2003/02/19 22:33:12 xmath Exp $
 
 Revision history for Data::XDumper:
+
+1.02  Wed Feb 19 23:32:53 CET 2003
+	- Use B::More for more detailed and accurate dumping
+	- Added the exportable DumpVar function (only on perl 5.8)
+	- Only consider references to be the same when they really are,
+	  not just when they point to the same thing
+	- Support labels for any kind of value
+	- Added type-prefix to labels
+	- Removed the 'unblessed' option
+	- Added the 'markro' option
+	- Changed default indent to 3 spaces
+	- Include an example with the distribution
+	- Removed dependency for Attribute::Property
+	- Slighly improved documentation
 
 1.01  Tue Feb 13 17:32:47 2003
 	- Passing the 'lformat' option to 'new' should now work.
