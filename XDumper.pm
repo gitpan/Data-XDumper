@@ -1,4 +1,4 @@
-# $Id: XDumper.pm,v 1.28 2003/02/18 00:42:00 xmath Exp $
+# $Id: XDumper.pm,v 1.29 2003/02/20 12:14:29 xmath Exp $
 
 use 5.006;
 use strict;
@@ -6,7 +6,7 @@ use warnings;
 
 package Data::XDumper;
 
-our $VERSION = "1.02";
+our $VERSION = "1.03";
 
 use Carp;
 use Data::Dumper ();	# to borrow qquote()
@@ -63,6 +63,7 @@ sub dumprefs : method {
 	my @queue;
 	my @data = map $obj->_dump($_, \@queue, ''), @_;
 	$_->() for @queue;
+	@queue = ();	# circular refs!
 	return wantarray
 		? map $_->(), @data
 		: (defined(wantarray) ? sub{$_[0]} : sub{print $_[0]})
@@ -304,19 +305,38 @@ labeled cross-references.
     print scalar $dump->dump([1, 2, 1024]);
     print "$_\n" for $dump->dump({ foo => sub{}, 'bar ' => ["\n"] });
     $dump->usehex = 0;
-    print scalar $dump->dump([1, 2, 1024]);
+    print scalar $dump->dump(bless [1, 2, 1024], 'MyClass');
 
     my $test = ["foo"];
     push @$test, \$test;
-    Data::XDumper::Default->indent = "  ";
     Data::XDumper::Dump $test;
 
     use Data::XDumper qw(Dump DumpVar);
 
-    print scalar Dump [1, "x" x 60, 42];
+    print scalar Dump [1, "x" x 50, \"hi!", \*Foo::Bar, 42];
 
     my %x = (foo => 1, bar => 2, baz => 3);
     DumpVar %x;		# requires perl 5.8 or later
+
+=head2 Synopsis output
+
+            [1, 2, 0x400]
+
+            {'bar ' => ["\n"], foo => \&(synopsis.pl:5)}
+
+            \MyClass @(1, 2, 1024)
+
+    $L001:  ['foo', \$L001]
+
+            [
+               1,
+               'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+               \<ro> 'hi!',
+               \*Foo::Bar
+               42
+            ]
+
+            %(bar => 2, baz => 3, foo => 1)
 
 =head1 DESCRIPTION
 

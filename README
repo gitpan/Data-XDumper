@@ -1,5 +1,5 @@
 Data::XDumper
-$Id: README,v 1.8 2003/02/18 00:42:00 xmath Exp $
+$Id: README,v 1.9 2003/02/20 12:14:29 xmath Exp $
 
 INSTALLATION
 
@@ -24,19 +24,37 @@ SYNOPSIS
         print scalar $dump->dump([1, 2, 1024]);
         print "$_\n" for $dump->dump({ foo => sub{}, 'bar ' => ["\n"] });
         $dump->usehex = 0;
-        print scalar $dump->dump([1, 2, 1024]);
+        print scalar $dump->dump(bless [1, 2, 1024], 'MyClass');
 
         my $test = ["foo"];
         push @$test, \$test;
-        Data::XDumper::Default->indent = "  ";
         Data::XDumper::Dump $test;
 
         use Data::XDumper qw(Dump DumpVar);
 
-        print scalar Dump [1, "x" x 60, 42];
+        print scalar Dump [1, "x" x 50, \"hi!", \*Foo::Bar, 42];
 
         my %x = (foo => 1, bar => 2, baz => 3);
         DumpVar %x;         # requires perl 5.8 or later
+
+  Synopsis output
+                [1, 2, 0x400]
+
+                {'bar ' => ["\n"], foo => \&(synopsis.pl:5)}
+
+                \MyClass @(1, 2, 1024)
+
+        $L001:  ['foo', \$L001]
+
+                [
+                   1,
+                   'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+                   \<ro> 'hi!',
+                   \*Foo::Bar
+                   42
+                ]
+
+                %(bar => 2, baz => 3, foo => 1)
 
 DESCRIPTION
     Produces dumps of almost any kind of perl datastructure, in a format
@@ -110,7 +128,7 @@ KNOWN ISSUES
     The code is ugly and devoid of comments. The documentation is too brief.
     But it does seem to work though :-)
 
-    Formatting GVs, CVs and FMs still needs improvement.  And I don't really
+    Formatting GVs, CVs and FMs still needs improvement. And I don't really
     know yet what to do with IO (if anything).
 
 AUTHOR

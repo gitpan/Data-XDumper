@@ -1,6 +1,10 @@
-$Id: Changes,v 1.5 2003/02/19 22:33:12 xmath Exp $
+$Id: Changes,v 1.6 2003/02/20 12:14:29 xmath Exp $
 
 Revision history for Data::XDumper:
+
+1.03  Thu Feb 20 13:11:50 CET 2003
+	- Fixed major memory leak due to circular references
+	- Slightly updated synopsis and added corresponding output
 
 1.02  Wed Feb 19 23:32:53 CET 2003
 	- Use B::More for more detailed and accurate dumping
