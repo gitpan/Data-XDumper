@@ -1,0 +1,85 @@
+Data::XDumper
+$Id: README,v 1.2 2003/02/13 13:56:22 xmath Exp $
+
+INSTALLATION
+
+To install this module type the following:
+
+   perl Makefile.PL && make && make test
+   make install
+
+Or use CPANPLUS to automate the process.
+
+
+Module documentation:
+
+NAME
+    Data::XDumper - Human readable dumps of perl data structures
+
+SYNOPSIS
+        use Data::XDumper;
+
+        my $dump = new Data::XDumper usehex => 1;
+        print scalar $dump->dump([1, 2, 1024]);
+        print "$_\n" for $dump->dump({ foo => sub{}, 'bar ' => ["\n"] });
+        $dump->usehex = 0;
+        print scalar $dump->dump([1, 2, 1024]);
+
+        my $test = ["foo"];
+        push @$test, \$test;
+        Data::XDumper::Default->indent = "  ";
+        Data::XDumper::Dump $test;
+
+        use Data::XDumper qw(Dump);
+
+        print scalar Dump [1, "x" x 60, 42];
+
+DESCRIPTION
+    Produces dumps of almost any kind of perl datastructure, in a format
+    which I personally find a lot more readable than that of Data::Dumper.
+
+    The dump returns the output lines in list context. Otherwise it produces
+    a big string containing the whole dump, and in void context prints it
+    too.
+
+    There are a few settings you can set on the dumper object. When you
+    create a new dumper, it inherits the settings from the default object,
+    which is returned by "Data::XDumper::Default".
+
+  Methods
+    *PACKAGE*->dump(*LIST*)
+        Dump the list of items using the default object (see "Functions"
+        below).
+
+    *$OBJ*->dump(*LIST*)
+        Dump the list of items.
+
+  Properties
+    *$OBJ*->indent
+        The string used to increase the indentation level.
+
+    *$OBJ*->prefix
+        The string prefixed to every output line. Note that this string
+        should accomodate space for the labels. By default it is 8 spaces.
+
+    *$OBJ*->linelen
+        The maximum desired line length. If a single-line form of a value
+        exceeds this length, XDumper will use multi-line form instead.
+
+    *$OBJ*->lformat
+        The format for labels. Must match /^[A-Za-z0-9]+\z/.
+
+  Functions
+    Dump *LIST*
+        Dump the list of items using the default object.
+
+    Default
+        Returns the default object, to allow you to change its settings.
+
+AUTHOR
+    Matthijs van Duin <xmath@cpan.org>
+
+    Copyright (C) 2003 Matthijs van Duin. All rights reserved. This program
+    is free software; you can redistribute it and/or modify it under the
+    same terms as Perl itself.
+
