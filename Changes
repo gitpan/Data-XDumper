@@ -1,6 +1,14 @@
-$Id: Changes,v 1.1 2003/02/13 13:24:48 xmath Exp $
+$Id: Changes,v 1.2 2003/02/13 16:35:40 xmath Exp $
 
 Revision history for Data::XDumper:
 
+1.01  Tue Feb 13 17:32:47 2003
+	- Passing the 'lformat' option to 'new' should now work.
+	- Clean undef entries from seen-list before doing a second dump
+	- Avoid showing memory addresses in a dump (like 'CODE(0x51128)')
+	- Added real tests
+	- Updated the documentation
+
 1.00  Tue Feb 13 14:04:13 2003
+	- Messed up the distibuation, so this isn't a real release
 	- Initial version

@@ -1,9 +1,7 @@
-# $Id: Makefile.PL,v 1.1 2003/02/13 13:24:48 xmath Exp $
+# $Id: Makefile.PL,v 1.2 2003/02/13 16:31:59 xmath Exp $
 
 use 5.006;
 use ExtUtils::MakeMaker;
-
-eval { mkdir "Data" and symlink "../XDumper.pm", "Data/XDumper.pm" };
 
 WriteMakefile(
 	NAME		=> 'Data::XDumper',

@@ -1,4 +1,4 @@
-# $Id: XDumper.pm,v 1.2 2003/02/13 13:35:53 xmath Exp $
+# $Id: XDumper.pm,v 1.5 2003/02/13 16:35:40 xmath Exp $
 
 use 5.006;
 use strict;
@@ -6,7 +6,7 @@ use warnings;
 
 package Data::XDumper;
 
-our $VERSION = "1.00";
+our $VERSION = "1.01";
 
 use Attribute::Property;
 use Carp;
@@ -26,9 +26,9 @@ use constant Default => sub{my%x=@_;bless\%x,__PACKAGE__}->(
 
 sub new : method {
 	my ($class, %options) = @_;
-	my %self = %{Default->reset};
+	my %self = %{+Default};
 	@self{keys %options} = values %options;
-	bless \%self, $class
+	(bless \%self, $class)->reset
 }
 
 sub prefix : Property { defined }
@@ -36,7 +36,6 @@ sub indent : Property { defined }
 sub linelen : Property { $_ > 0 }
 sub usehex : Property { $_ = not !$_; 1 }
 sub lformat : Property { /^[A-Za-z0-9]+\z/ }
-sub builtins : Property { $_ = not !$_; 1 }
 
 sub reset : method {
 	my ($obj) = @_;
@@ -48,6 +47,9 @@ sub reset : method {
 sub dump : method {
 	my $obj = shift;
 	$obj = Default->reset unless ref $obj;
+	while (my ($k, $v) = each %{$obj->{seen}}) {
+		delete $obj->{seen}->{$k} unless $v;
+	}
 	my @queue;
 	my @data = map $obj->_dump($_, \@queue, ''), @_;
 	$_->() for @queue;
@@ -81,8 +83,9 @@ sub _dump : method {
 		$ob = '\\';  $cb = '';
 	} else {
 plain:		if ($type) {
-			$val = $obj->{seen}->{$val} ||= $obj->{curlabel}++
-				if exists $obj->{seen}->{$val};
+			$val = exists $obj->{seen}->{$val}
+				? $obj->{seen}->{$val} ||= $obj->{curlabel}++
+				: $type;
 		} elsif (not defined $val) {
 			$val = 'undef';
 		} elsif ($val !~ /^(?:0|-?[1-9]\d*)(?:\.\d*)?(e[+-]\d+)?\z/) {
@@ -156,7 +159,8 @@ sub qquote {
 
 =head1 NAME
 
-Data::XDumper - Human readable dumps of perl data structures
+Data::XDumper - Human readable dumps of perl data structures with labeled
+cross-references.
 
 =head1 SYNOPSIS
 
@@ -201,11 +205,21 @@ Dump the list of items using the default object (see C<Functions> below).
 
 Dump the list of items.
 
+=item I<$OBJ>->reset
+
+Reset the dumper object to its initial state.  This clears the list of
+references it has seen, and resets the label counter.
+
 =back
 
 =head2 Properties
 
 =over 4
+
+=item I<$OBJ>->usehex
+
+Use hexadecimal notation for integers in range -0xFFFFFFFF .. -0xA and
+0xA .. 0xFFFFFFFF.
 
 =item I<$OBJ>->indent
 
@@ -223,7 +237,8 @@ this length, XDumper will use multi-line form instead.
 
 =item I<$OBJ>->lformat
 
-The format for labels.  Must match /^[A-Za-z0-9]+\z/.
+The format for labels.  Must match /^[A-Za-z0-9]+\z/.  You need to reset
+the object before change of label format takes effect.
 
 =back
 
@@ -240,6 +255,14 @@ Dump the list of items using the default object.
 Returns the default object, to allow you to change its settings.
 
 =back
+
+=head1 KNOWN ISSUES
+
+The code is ugly and devoid of comments.  The documentation is too brief.
+But it does seem to work though :-)
+
+I'm still looking into what to do with CODE refs.. for now they're just
+formatted as C<CODE>.
 
 =head1 AUTHOR
 
